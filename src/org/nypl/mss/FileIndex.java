@@ -4,12 +4,19 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.apache.poi.ss.util.SSCellRange;
+import org.apache.solr.client.solrj.SolrServerException;
+
 
 public class FileIndex {
     private final File csv;
+    private static TikaTools tt;
+    private static SolrFile sf;
     
-    FileIndex(String csv) throws FileNotFoundException, IOException{
+    FileIndex(String csv) throws FileNotFoundException, IOException, SolrServerException{
         this.csv = new File(csv);
+        tt = new TikaTools();
+        sf = new SolrFile();
         verifyExists();
         parseObjects();
     }
@@ -21,7 +28,7 @@ public class FileIndex {
         }
     }
     
-    private void parseObjects() throws FileNotFoundException, IOException{
+    private void parseObjects() throws FileNotFoundException, IOException, SolrServerException{
         BufferedReader br = new BufferedReader(new FileReader(csv));
         String line;
         
@@ -58,10 +65,24 @@ public class FileIndex {
                     i++;
                 }
                 fm.setUid();
-                System.out.println(fm);
+                File file = new File("files/" + fm.getFileName() + ".docx");
+                if(file.exists()){
+                    
+                    tt.init(file, fm);
+                    fm.setLanguage(tt.getLanguage());
+                    tt.getPersons();             
+                    tt.getLocations();
+                    tt.getOrganizations();
+                    /*
+                    tt.getDates();
+                    */
+                }
+                sf.indexFM(fm);
+                //System.out.println(fm);
             }
             count++;
         }
+        sf.finalizeDoc();
     }
     
     private void processPath(String token, FileModel fm) {
@@ -94,7 +115,7 @@ public class FileIndex {
         }
     }
     
-    public static void main(String[] args) throws FileNotFoundException, IOException {
+    public static void main(String[] args) throws FileNotFoundException, IOException, SolrServerException {
         String s = "M18867-0001.csv";
         FileIndex f = new FileIndex(s);
     }

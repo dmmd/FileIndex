@@ -1,6 +1,8 @@
 package org.nypl.mss;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class FileModel {
     private String fileName;
@@ -14,6 +16,11 @@ public class FileModel {
     private String uid;
     private Long fileSize;
     private String path;
+    private String language;
+    private List<String> locations = new ArrayList<String>();
+    private List<String> names = new ArrayList<String>();
+    private List<String> orgs = new ArrayList<String>();
+    private List<String> dates = new ArrayList<String>();
     
     FileModel(){
 
@@ -107,8 +114,62 @@ public class FileModel {
     public void setPath(String path) {
         this.path = path;
     }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public List<String> getLocations() {
+        return locations;
+    }
+
+    public void addLocation(String loc) {
+        locations.add(loc);
+    }
     
+    public boolean hasLoc(String name){
+        return locations.contains(name);
+    }
     
+    public List<String> getNames() {
+        return names;
+    }
+
+    public void addName(String name) {
+        names.add(name);
+    }
+    
+    public boolean hasName(String name){
+        return names.contains(name);
+    }
+    
+    public List<String> getOrgs() {
+        return orgs;
+    }
+
+    public void addOrg(String name) {
+        orgs.add(name);
+    }
+    
+    public boolean hasOrg(String name){
+        return orgs.contains(name);
+    }
+    
+    public List<String> getDates() {
+        return dates;
+    }
+
+    public void addDate(String name) {
+        dates.add(name);
+    }
+    
+    public boolean hasDate(String name){
+        return dates.contains(name);
+    }
     
     @Override
     public String toString(){        
@@ -122,7 +183,36 @@ public class FileModel {
             .append("\npath\t").append(this.getPath())
             .append("\nsize\t").append(this.getFileSize())
             .append("\nmDate\t").append(this.getModDate())
-            .append("\n");
+            .append("\nlang\t").append(this.getLanguage());
+        
+            
+            if(!names.isEmpty()){
+                sb.append("\nNames");
+                for(String name: names){
+                    sb.append("\n\t").append(name);
+                }
+            }
+            if(!orgs.isEmpty()){
+                sb.append("\nOrganizations");
+                for(String org: orgs){
+                    sb.append("\n\t").append(org);
+                }
+            }
+            
+            if(!locations.isEmpty()){
+                sb.append("\nLocations");
+                for(String location: locations){
+                    sb.append("\n\t").append(location);
+                }
+            }
+            
+            if(!dates.isEmpty()){
+                sb.append("\nDates");
+                for(String date: dates){
+                    sb.append("\n\t").append(date);
+                }
+            }
+            sb.append("\n");
         return sb.toString();
     }
 
