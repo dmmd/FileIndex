@@ -17,6 +17,7 @@ public class FileModel {
     private Long fileSize;
     private String path;
     private String language;
+    private String content;
     private List<String> locations = new ArrayList<String>();
     private List<String> names = new ArrayList<String>();
     private List<String> orgs = new ArrayList<String>();
@@ -170,6 +171,16 @@ public class FileModel {
     public boolean hasDate(String name){
         return dates.contains(name);
     }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+    
+    
     
     @Override
     public String toString(){        

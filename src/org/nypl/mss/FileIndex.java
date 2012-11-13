@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.apache.poi.ss.util.SSCellRange;
 import org.apache.solr.client.solrj.SolrServerException;
 
 
@@ -12,6 +11,7 @@ public class FileIndex {
     private final File csv;
     private static TikaTools tt;
     private static SolrFile sf;
+    private String cName;
     
     FileIndex(String csv) throws FileNotFoundException, IOException, SolrServerException{
         this.csv = new File(csv);
@@ -35,13 +35,19 @@ public class FileIndex {
         int count = 0;
         while((line = br.readLine()) != null){
 
-            if(count > 0){
+            if(count == 0){
+                cName = "American Place Theatre Records";
+                count++;
+            } else {
                 FileModel fm = new FileModel();
+                fm.setCollectionName(cName);
                 String[] tokensa = line.split(",");
                 List<String> tokens = new ArrayList(Arrays.asList(tokensa));
                 int i = 0;
                 for(String token: tokens){
-                    token = token.substring(1, token.length() - 1);                    
+                    //System.out.println(i + ": " + token);
+                    if(token != null || token != "")
+                        token = token.substring(1, token.length() - 1);                    
                     switch(i){
                         case 0:
                             fm.setFid(token);
@@ -52,20 +58,22 @@ public class FileIndex {
                         case 2:
                             processPath(token, fm);
                             break;
-                        case 4:
+                        case 3:
                             fm.setFileType(token);
                             break;
-                        case 5:
+                        case 4:
                             processModDate(token, fm);
                             break;
-                        case 7:
+                        case 6:
                             fm.setFileSize(Long.parseLong(token));
+                            break;
+                        default:
                             break;
                     }
                     i++;
                 }
                 fm.setUid();
-                File file = new File("files/" + fm.getFileName() + ".docx");
+                File file = new File("M18636-0008/" + fm.getFileName() + "x");
                 if(file.exists()){
                     
                     tt.init(file, fm);
@@ -76,9 +84,14 @@ public class FileIndex {
                     /*
                     tt.getDates();
                     */
+                    
+                    tt.extractText();
+                } else {
+                    System.out.println("NO FILE EXISTS: M18636-0008/" + fm.getFileName());
                 }
-                sf.indexFM(fm);
                 //System.out.println(fm);
+                sf.indexFM(fm);
+                //
             }
             count++;
         }
@@ -116,7 +129,7 @@ public class FileIndex {
     }
     
     public static void main(String[] args) throws FileNotFoundException, IOException, SolrServerException {
-        String s = "M18867-0001.csv";
+        String s = "M18636-0008/M18636-0008.csv";
         FileIndex f = new FileIndex(s);
     }
 

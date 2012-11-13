@@ -145,4 +145,16 @@ public class TikaTools {
             }
         }
     }
+    
+    public void extractText() throws IOException{
+        BufferedReader br = new BufferedReader(tika.parse(new FileInputStream(file)));
+        String line;
+        StringBuilder sb = new StringBuilder("");
+        
+        while((line = br.readLine()) != null){
+            sb.append(line);
+        }
+        
+        fm.setContent(sb.toString());
+    }
 }
